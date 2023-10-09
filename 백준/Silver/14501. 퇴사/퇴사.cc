@@ -1,27 +1,21 @@
-#include <iostream>
-#include <queue>
-#include <stack>
-#include <tuple>
-#include <cstring>
-#include <algorithm>
-
+#include <bits/stdc++.h>
 using namespace std;
 
+#define LL long long
 int n;
-int map[20][2];
-int pay[20];
-int ans;
+int t[16],p[16];
+int dp[16];
 
 int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+
     cin >> n;
-    for(int i=1;i<=n;i++){
-        cin >> map[i][0] >> map[i][1];
+    for(int i=0;i<n;i++) cin >> t[i] >> p[i];
+
+    for(int i=n-1;i>=0;i--){
+        if(i+t[i]>n) dp[i]=dp[i+1];
+        else dp[i]=max(dp[i+t[i]]+p[i],dp[i+1]);
     }
-    int to_date;
-    for(int i=n;i>0;i--){
-        to_date=i+map[i][0];
-        if(to_date>n+1) pay[i]=pay[i+1];
-        else pay[i]=max(pay[i+1], map[i][1]+pay[to_date]);
-    }
-    cout << pay[1] << "\n";
+    cout << dp[0] << "\n";
 }

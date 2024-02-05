@@ -1,68 +1,54 @@
-#include <iostream>
-#include <algorithm>
-#include <deque>
-#include <queue>
-#include <stack>
-#include <cmath>
-#include <string>
-#include <cstdlib>
-#include <map>
-#include <sstream>
-#include <limits.h>
+#include <bits/stdc++.h>
+
 using namespace std;
 
-struct Node{
-    int start,end,weight;
+#define int long long
+
+int n, m;
+struct Node {
+	int start, end, weight;
 };
 
-Node* getNode(int s, int e, int w){
-    Node* node=(Node*)malloc(sizeof(Node));
-    node->start=s;
-    node->end=e;
-    node->weight=w;
-    
-    return node;
-}
+Node node[6000];
 
-int n,m;
-vector<long long> dis;
-vector<Node*> edges;
+signed main() {
+	ios::sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
 
-int main(){
-    ios::sync_with_stdio(false);
-    cin.tie(NULL); cout.tie(NULL);
+	cin >> n >> m;
+	for (int i = 0; i < m; i++) {
+		int s, e, w; cin >> s >> e >> w;
+		node[i].start = s - 1, node[i].end = e - 1, node[i].weight = w;
+	}
 
-    cin >> n >> m;
-    dis.resize(n+1);
-    fill(dis.begin(), dis.end(), LONG_LONG_MAX);
+	vector<int> result(n, INT_MAX);
+	result[0] = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			int s, e, w;
+			s = node[j].start, e = node[j].end, w = node[j].weight;
+			if (result[s] == INT_MAX) continue;
+			result[e] = min(result[e], result[s] + w);
+		}
+	}
+	int ans = 0;
+	bool cycle = false;
 
-    for(int i=0;i<m;i++){
-        int st,en,we; cin >> st >> en >> we;
-        edges.push_back(getNode(st,en,we));
-    }
+	for (int i = 0; i < m; i++) {
+		int s, e, w;
+		s = node[i].start, e = node[i].end, w = node[i].weight;
+		if (result[s] == INT_MAX) continue;
+		if (result[e] > result[s] + w) {
+			cycle = true; break;
+		}
+	}
 
-    dis[1]=0;
-    for(int i=1;i<n;i++){
-        for(int j=0;j<m;j++){
-            Node* now = edges[j];
-            if(dis[now->start]!=LONG_LONG_MAX && dis[now->end]>dis[now->start]+now->weight){
-                dis[now->end]=dis[now->start]+now->weight;
-            }
-        }
-    }
-    bool cycle_chk=false;
+	if (cycle) cout << -1 << "\n";
+	else {
+		for (int i = 1; i < n; i++) {
+			if (result[i] == INT_MAX) cout << -1 << "\n";
+			else cout << result[i] << "\n";
+		}
+	}
 
-    for(int i=0;i<m;i++){
-        Node* chk=edges[i];
-        if(dis[chk->start]!=LONG_LONG_MAX && dis[chk->end]>dis[chk->start]+chk->weight){
-            cycle_chk=true;
-        }
-    }
-    if(!cycle_chk){
-        for(int i=2;i<=n;i++){
-            if(dis[i]==LONG_LONG_MAX) cout << -1 << "\n";
-            else cout << dis[i] << "\n";
-        }
-    }
-    else cout << -1 << "\n";
 }
